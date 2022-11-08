@@ -1,11 +1,11 @@
 x-app: &app
   env_file:
-    - ./.env
+    - ./.env.dev
   restart: always
 
 services:
   postgres:
     <<: *app
     build: PostgresDB
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
