@@ -1,14 +1,16 @@
 # Импорт классов для создания сервиса
 from ..weather_service import WeatherBaseService
-from .open_meteo_model import OpenMeteoModel
+from .open_meteo_model import OpenMeteoModel, OpenWeatherMapper
 
 # Импорт датаклассов
-from WeatherData.src.dataclasses.coordinates import Coordinates
-from WeatherData.src.dataclasses.datetime_range import DateRange
+from ..Utils.coordinates import Coordinates
+from ..Utils.datetime_range import DateRange
 
 # Импорт системных библиотек
 from typing import List
 import requests
+
+from http import HTTPStatus
 
 
 class OpenMeteoService(WeatherBaseService):
@@ -19,7 +21,7 @@ class OpenMeteoService(WeatherBaseService):
         pass
 
     def get_period_data(self, coords: Coordinates, date_range: DateRange) -> List[OpenMeteoModel]:
-        hour_data_string = ['dewpoint_2m', 'weathercode', 'cloudcover', 'windspeed_10m', 'windspeed_180m']
+        hour_data_string = OpenWeatherMapper.get_params
         params = {
             'latitude': coords.latitude,
             'longitude': coords.longitude,
@@ -29,5 +31,20 @@ class OpenMeteoService(WeatherBaseService):
             'timeformat': 'unixtime'
         }
         r = requests.get(self._url, params=params)
-        data = r.json()
-        print(data)
+        if r.status_code == HTTPStatus.OK:
+            data = r.json()['hourly']
+            # Mappers creation
+            data_keys = tuple(data.keys())
+            model_keys = {}
+            for key, value in OpenWeatherMapper.mapper.items():
+                model_keys[value] = key
+
+            result = []
+            for data_num in range(len(data['time'])):
+                data_row = {}
+                for key in data_keys:
+                    data_row[model_keys[key]] = data[key][data_num]
+                result.append(OpenMeteoModel(**data_row))
+
+            return result
+        return []

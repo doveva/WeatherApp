@@ -1,5 +1,5 @@
-from src.dataclasses.coordinates import Coordinates
-from src.dataclasses.datetime_range import DateRange
+from src.Utils.coordinates import Coordinates
+from src.Utils.datetime_range import DateRange
 
 from src.OpenMeteo.open_meteo import OpenMeteoService
 from datetime import date, timedelta
