@@ -1,3 +1,6 @@
+volumes:
+  postgres_data:
+
 x-app: &app
   env_file:
     - ./.env.dev
@@ -9,3 +12,19 @@ services:
     build: PostgresDB
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  zookeeper:
+    <<: *app
+    image: confluentinc/cp-zookeeper:7.3.0
+    ports:
+      - "22181:2181"
+
+  kafka:
+    <<: *app
+    image: confluentinc/cp-kafka:7.3.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"

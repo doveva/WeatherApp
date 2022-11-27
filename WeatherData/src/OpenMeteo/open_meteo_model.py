@@ -1,24 +1,35 @@
-from pydantic import BaseModel, validator
-from typing import Optional
-from uuid import UUID, uuid4
+import json
+from pydantic import validator
 from datetime import datetime
+from uuid import UUID
+
+
 from ..Utils.status_codes import WeatherStatusCodes
+from ..Models.base_model import BaseMeteoModel
 
 
-class OpenMeteoModel(BaseModel):
-    id: Optional[UUID] = uuid4()
+class OpenMeteoModel(BaseMeteoModel):
     dewpoint: float
     weather: str
     cloud_cover: int
     wind_speed_low: float
-    wind_direction_low: str
-    wind_speed_high: float
-    wind_direction_high: str
+    wind_direction_low: str = None
+    wind_speed_high: float = None
+    wind_direction_high: str = None
     datetime: datetime
 
     @validator('weather', pre=True)
     def validate_weather(cls, v):
         return OpenWeatherMapper.weather_code(v)
+
+    def convert_to_json_dict(self) -> dict:
+        data = self.dict()
+        for key, value in data.items():
+            if isinstance(value, UUID):
+                data[key] = value.hex
+            if isinstance(value, datetime):
+                data[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+        return data
 
 
 class OpenWeatherMapper:
