@@ -1,7 +1,8 @@
 from pydantic import BaseModel, validator, ValidationError
 
 
-class Coordinates(BaseModel):
+class Place(BaseModel):
+    name: str
     longitude: float
     latitude: float
 

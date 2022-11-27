@@ -1,7 +1,6 @@
 from abc import abstractmethod
-from .Utils.coordinates import Coordinates
+from .Utils.coordinates import Place
 from .Utils.datetime_range import DateRange
-from pydantic import BaseModel
 from typing import List
 
 
@@ -9,10 +8,15 @@ class WeatherBaseService:
     """
     Базовый интерфейс для получения данных от источника
     """
+    __name__ = NotImplementedError
+
     @abstractmethod
-    def get_day_data(self, coords: Coordinates) -> BaseModel:
+    def get_day_json_data(self, coords: Place) -> dict:
         pass
 
     @abstractmethod
-    def get_period_data(self, coords: Coordinates, data_range: DateRange) -> List[BaseModel]:
+    def get_period_json_data(self, coords: Place, date_range: DateRange) -> List[dict]:
         pass
+
+    def __str__(self):
+        return self.__name__

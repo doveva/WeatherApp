@@ -1,26 +1,30 @@
 # Импорт классов для создания сервиса
 from ..weather_service import WeatherBaseService
+from ..Models.base_model import BaseMeteoModel
 from .open_meteo_model import OpenMeteoModel, OpenWeatherMapper
 
 # Импорт датаклассов
-from ..Utils.coordinates import Coordinates
+from ..Utils.coordinates import Place
 from ..Utils.datetime_range import DateRange
 
 # Импорт системных библиотек
 from typing import List
 import requests
 
+
 from http import HTTPStatus
 
 
 class OpenMeteoService(WeatherBaseService):
+    __name__ = "Open Meteo Service"
+
     def __init__(self):
         self._url = 'https://api.open-meteo.com/v1/forecast'
 
-    def get_day_data(self, coords: Coordinates) -> OpenMeteoModel:
+    def get_day_json_data(self, coords: Place) -> str:
         pass
 
-    def get_period_data(self, coords: Coordinates, date_range: DateRange) -> List[OpenMeteoModel]:
+    def _get_period_data(self, coords: Place, date_range: DateRange) -> List[BaseMeteoModel]:
         hour_data_string = OpenWeatherMapper.get_params
         params = {
             'latitude': coords.latitude,
@@ -47,4 +51,9 @@ class OpenMeteoService(WeatherBaseService):
                 result.append(OpenMeteoModel(**data_row))
 
             return result
-        return []
+
+    def get_period_json_data(self, coords: Place, date_range: DateRange) -> List[dict]:
+        result = []
+        for data_value in self._get_period_data(coords=coords, date_range=date_range):
+            result.append(data_value.convert_to_json_dict())
+        return result
