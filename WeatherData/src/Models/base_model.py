@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class BaseMeteoModel(BaseModel):
-    id: Optional[UUID] = uuid4()
+    Id: Optional[UUID] = uuid4()
 
     @abstractmethod
     def convert_to_json_dict(self) -> dict:

@@ -1,6 +1,10 @@
 volumes:
   postgres_data:
 
+networks:
+  internalnet:
+    driver: bridge
+
 x-app: &app
   env_file:
     - ./.env.dev
@@ -20,11 +24,44 @@ services:
     image: confluentinc/cp-zookeeper:7.3.0
     ports:
       - "22181:2181"
+    networks:
+      - internalnet
 
-  kafka:
+  kafka-1:
     <<: *app
     image: confluentinc/cp-kafka:7.3.0
     depends_on:
       - zookeeper
     ports:
       - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:9092,EXTERNAL://localhost:29092
+    networks:
+      - internalnet
+
+  kafka-2:
+    <<: *app
+    image: confluentinc/cp-kafka:7.3.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "29093:29093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-2:9092,EXTERNAL://localhost:29093
+    networks:
+      - internalnet
+
+  kafka-3:
+    <<: *app
+    image: confluentinc/cp-kafka:7.3.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "29094:29094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-3:9092,EXTERNAL://localhost:29094
+    networks:
+      - internalnet
