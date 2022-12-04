@@ -1,5 +1,5 @@
 from pydantic import validator
-from datetime import datetime, timezone, timedelta, tzinfo
+from datetime import datetime, timedelta, tzinfo
 from uuid import UUID
 
 
@@ -115,5 +115,6 @@ class SPbTz(tzinfo):
 
     def tzname(self, dt):
         return "+03"
+
 
 spb_timezone = SPbTz()
