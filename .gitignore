@@ -3,6 +3,7 @@ __pycache__/
 
 # Окружение
 .env
+.env.dev
 env/
 venv/
 
@@ -11,3 +12,7 @@ venv/
 .vscode
 
 .environment/
+
+# C# .Net
+
+obj/

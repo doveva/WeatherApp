@@ -1,24 +1,23 @@
-import json
 from pydantic import validator
-from datetime import datetime
+from datetime import datetime, timedelta, tzinfo
 from uuid import UUID
 
 
-from ..Utils.status_codes import WeatherStatusCodes
-from ..Models.base_model import BaseMeteoModel
+from Utils.status_codes import WeatherStatusCodes
+from Models.base_model import BaseMeteoModel
 
 
 class OpenMeteoModel(BaseMeteoModel):
-    dewpoint: float
-    weather: str
-    cloud_cover: int
-    wind_speed_low: float
-    wind_direction_low: str = None
-    wind_speed_high: float = None
-    wind_direction_high: str = None
-    datetime: datetime
+    Dewpoint: float
+    Weather: str
+    CloudCover: int
+    WindSpeedLow: float
+    WindDirectionLow: int = None
+    WindSpeedHigh: float = None
+    WindDirectionHigh: int = None
+    Datetime: datetime
 
-    @validator('weather', pre=True)
+    @validator('Weather', pre=True)
     def validate_weather(cls, v):
         return OpenWeatherMapper.weather_code(v)
 
@@ -26,9 +25,9 @@ class OpenMeteoModel(BaseMeteoModel):
         data = self.dict()
         for key, value in data.items():
             if isinstance(value, UUID):
-                data[key] = value.hex
+                data[key] = str(value)
             if isinstance(value, datetime):
-                data[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+                data[key] = value.replace(tzinfo=spb_timezone).replace(microsecond=0).isoformat()
         return data
 
 
@@ -44,14 +43,14 @@ class OpenWeatherMapper:
     ]
 
     mapper = {
-        'datetime': 'time',
-        'dewpoint': 'dewpoint_2m',
-        'weather': 'weathercode',
-        'cloud_cover': 'cloudcover',
-        'wind_speed_low': 'windspeed_10m',
-        'wind_direction_low': 'winddirection_10m',
-        'wind_speed_high': 'windspeed_180m',
-        'wind_direction_high': 'winddirection_180m',
+        'Datetime': 'time',
+        'Dewpoint': 'dewpoint_2m',
+        'Weather': 'weathercode',
+        'CloudCover': 'cloudcover',
+        'WindSpeedLow': 'windspeed_10m',
+        'WindDirectionLow': 'winddirection_10m',
+        'WindSpeedHigh': 'windspeed_180m',
+        'WindDirectionHigh': 'winddirection_180m',
     }
 
     @staticmethod
@@ -66,25 +65,25 @@ class OpenWeatherMapper:
                 return WeatherStatusCodes.partly_cloudy
             case 3:
                 return WeatherStatusCodes.overcast
-            case [45, 48]:
+            case 45 | 48:
                 return WeatherStatusCodes.fog
-            case [51, 53, 55]:
+            case 51 | 53 | 55:
                 return WeatherStatusCodes.drizzle
-            case [56, 57]:
+            case 56 | 57:
                 return WeatherStatusCodes.freezing_drizzle
-            case [61, 63, 65]:
+            case 61 | 63 | 65:
                 return WeatherStatusCodes.rain
-            case [66, 67]:
+            case 66 | 67:
                 return WeatherStatusCodes.freezing_rain
-            case [71, 73, 75]:
+            case 71 | 73 | 75:
                 return WeatherStatusCodes.snow
             case 77:
                 return WeatherStatusCodes.snow_grains
-            case [80, 81, 82]:
+            case 80 | 81 | 82:
                 return WeatherStatusCodes.rain_showers
-            case [85, 86]:
+            case 85 | 86:
                 return WeatherStatusCodes.snow_showers
-            case [95, 96, 99]:
+            case 95 | 96 | 99:
                 return WeatherStatusCodes.thunderstorm
             case _:
                 return WeatherStatusCodes.no_data
@@ -93,3 +92,29 @@ class OpenWeatherMapper:
         raise NotImplementedError(
             'You don\'t need to make an instance object. Just relate to existing fields and methods'
         )
+
+
+class SPbTz(tzinfo):
+
+    UTCOffset = timedelta(hours=3)
+
+    def utcoffset(self, dt):
+        return self.UTCOffset
+
+    def fromutc(self, dt):
+        # Follow same validations as in datetime.tzinfo
+        if not isinstance(dt, datetime):
+            raise TypeError("fromutc() requires a datetime argument")
+        if dt.tzinfo is not self:
+            raise ValueError("dt.tzinfo is not self")
+        return dt + self.UTCOffset
+
+    def dst(self, dt):
+        # Kabul does not observe daylight saving time.
+        return timedelta(0)
+
+    def tzname(self, dt):
+        return "+03"
+
+
+spb_timezone = SPbTz()

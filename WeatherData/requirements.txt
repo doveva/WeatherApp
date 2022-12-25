@@ -8,3 +8,5 @@ starlette==0.20.4
 typing_extensions==4.4.0
 kafka-python-2.0.2
 urllib3==1.26.12
+psycopg2-2.9.5
+sqlalchemy-1.4.45
