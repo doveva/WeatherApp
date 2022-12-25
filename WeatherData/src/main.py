@@ -3,12 +3,15 @@ from datetime import date, timedelta, datetime
 from typing import List, Tuple
 from kafka import KafkaProducer
 
-from src.Utils.coordinates import Place
-from src.Utils.datetime_range import DateRange
-from src.OpenMeteo.open_meteo_model import spb_timezone
-from src.OpenMeteo.open_meteo import OpenMeteoService
+from Utils.coordinates import Place
+from Utils.datetime_range import DateRange
 
-from src.weather_service import WeatherBaseService
+from OpenMeteo.open_meteo_model import spb_timezone
+from OpenMeteo.open_meteo import OpenMeteoService
+
+from weather_service import WeatherBaseService
+
+from Places.places import PlacesDB
 
 
 class WeatherETL:
@@ -31,7 +34,7 @@ class WeatherETL:
         for coord in self._coords:
             data = service.get_period_json_data(coords=coord, date_range=self._date_range)
             result_data = {
-                'Place': coord.name,
+                'Place': coord.id,
                 'Data': data,
                 'Created': datetime.now().replace(tzinfo=spb_timezone).replace(microsecond=0).isoformat()
             }
@@ -44,7 +47,7 @@ class WeatherETL:
 
 if __name__ == "__main__":
     WeatherETL(
-        coords_range=[Place(name='Saint-Petersburg', latitude=59.93, longitude=30.31)],
+        coords_range=PlacesDB().get_all_places(),
         services_list=(OpenMeteoService(),),
         kafka_host=['localhost:29093']
     ).run_etl()

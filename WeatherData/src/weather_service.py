@@ -1,6 +1,6 @@
 from abc import abstractmethod
-from .Utils.coordinates import Place
-from .Utils.datetime_range import DateRange
+from Utils.coordinates import Place
+from Utils.datetime_range import DateRange
 from typing import List
 
 

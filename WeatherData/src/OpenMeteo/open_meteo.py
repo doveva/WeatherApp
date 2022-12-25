@@ -1,11 +1,11 @@
 # Импорт классов для создания сервиса
-from ..weather_service import WeatherBaseService
-from ..Models.base_model import BaseMeteoModel
-from .open_meteo_model import OpenMeteoModel, OpenWeatherMapper
+from weather_service import WeatherBaseService
+from Models.base_model import BaseMeteoModel
+from OpenMeteo.open_meteo_model import OpenMeteoModel, OpenWeatherMapper
 
 # Импорт датаклассов
-from ..Utils.coordinates import Place
-from ..Utils.datetime_range import DateRange
+from Utils.coordinates import Place
+from Utils.datetime_range import DateRange
 
 # Импорт системных библиотек
 from typing import List

@@ -3,8 +3,8 @@ from datetime import datetime, timedelta, tzinfo
 from uuid import UUID
 
 
-from ..Utils.status_codes import WeatherStatusCodes
-from ..Models.base_model import BaseMeteoModel
+from Utils.status_codes import WeatherStatusCodes
+from Models.base_model import BaseMeteoModel
 
 
 class OpenMeteoModel(BaseMeteoModel):
@@ -65,25 +65,25 @@ class OpenWeatherMapper:
                 return WeatherStatusCodes.partly_cloudy
             case 3:
                 return WeatherStatusCodes.overcast
-            case [45, 48]:
+            case 45 | 48:
                 return WeatherStatusCodes.fog
-            case [51, 53, 55]:
+            case 51 | 53 | 55:
                 return WeatherStatusCodes.drizzle
-            case [56, 57]:
+            case 56 | 57:
                 return WeatherStatusCodes.freezing_drizzle
-            case [61, 63, 65]:
+            case 61 | 63 | 65:
                 return WeatherStatusCodes.rain
-            case [66, 67]:
+            case 66 | 67:
                 return WeatherStatusCodes.freezing_rain
-            case [71, 73, 75]:
+            case 71 | 73 | 75:
                 return WeatherStatusCodes.snow
             case 77:
                 return WeatherStatusCodes.snow_grains
-            case [80, 81, 82]:
+            case 80 | 81 | 82:
                 return WeatherStatusCodes.rain_showers
-            case [85, 86]:
+            case 85 | 86:
                 return WeatherStatusCodes.snow_showers
-            case [95, 96, 99]:
+            case 95 | 96 | 99:
                 return WeatherStatusCodes.thunderstorm
             case _:
                 return WeatherStatusCodes.no_data

@@ -12,3 +12,7 @@ venv/
 .vscode
 
 .environment/
+
+# C# .Net
+
+obj/

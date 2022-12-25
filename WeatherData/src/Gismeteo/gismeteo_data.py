@@ -1,5 +1,5 @@
-from ..weather_service import WeatherBaseService
-from ..Utils.coordinates import Place
+from weather_service import WeatherBaseService
+from Utils.coordinates import Place
 
 
 class GismeteoService(WeatherBaseService):
