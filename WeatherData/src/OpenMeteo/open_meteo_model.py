@@ -1,7 +1,5 @@
 from pydantic import validator
-from datetime import datetime, timedelta, tzinfo
-from uuid import UUID
-
+from datetime import datetime
 
 from Utils.status_codes import WeatherStatusCodes
 from Models.base_model import BaseMeteoModel
@@ -20,15 +18,6 @@ class OpenMeteoModel(BaseMeteoModel):
     @validator('Weather', pre=True)
     def validate_weather(cls, v):
         return OpenWeatherMapper.weather_code(v)
-
-    def convert_to_json_dict(self) -> dict:
-        data = self.dict()
-        for key, value in data.items():
-            if isinstance(value, UUID):
-                data[key] = str(value)
-            if isinstance(value, datetime):
-                data[key] = value.replace(tzinfo=spb_timezone).replace(microsecond=0).isoformat()
-        return data
 
 
 class OpenWeatherMapper:
@@ -54,7 +43,7 @@ class OpenWeatherMapper:
     }
 
     @staticmethod
-    def weather_code(code: int) -> str | None:
+    def weather_code(code: int) -> str:
         match code:
 
             case 0:
@@ -92,29 +81,3 @@ class OpenWeatherMapper:
         raise NotImplementedError(
             'You don\'t need to make an instance object. Just relate to existing fields and methods'
         )
-
-
-class SPbTz(tzinfo):
-
-    UTCOffset = timedelta(hours=3)
-
-    def utcoffset(self, dt):
-        return self.UTCOffset
-
-    def fromutc(self, dt):
-        # Follow same validations as in datetime.tzinfo
-        if not isinstance(dt, datetime):
-            raise TypeError("fromutc() requires a datetime argument")
-        if dt.tzinfo is not self:
-            raise ValueError("dt.tzinfo is not self")
-        return dt + self.UTCOffset
-
-    def dst(self, dt):
-        # Kabul does not observe daylight saving time.
-        return timedelta(0)
-
-    def tzname(self, dt):
-        return "+03"
-
-
-spb_timezone = SPbTz()
