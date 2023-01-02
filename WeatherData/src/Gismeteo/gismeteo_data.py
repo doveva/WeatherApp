@@ -5,6 +5,7 @@ from Core.settings import config
 from weather_service import WeatherBaseService
 
 from Models.base_model import BaseMeteoModel
+from Gismeteo.gismeteo_model import GismeteoModel
 
 from Utils.coordinates import Place
 from Utils.datetime_range import DateRange
@@ -24,6 +25,7 @@ class GismeteoService(WeatherBaseService):
         pass
 
     def _get_period_data(self, coords: Place, date_range: DateRange) -> List[BaseMeteoModel]:
+        result = []
         diff = date_range.end_date - datetime.date.today()
         if 0 < diff.days <= 10:
             response = requests.get(
@@ -40,9 +42,10 @@ class GismeteoService(WeatherBaseService):
                 }
             )
             if response.status_code == HTTPStatus.OK:
-                data = response.json()
-
-        return []
+                data = response.json()['response']
+                for data_row in data:
+                    result.append(GismeteoModel.create_model(data_row))
+        return result
 
     def get_period_json_data(self, coords: Place, date_range: DateRange) -> List[dict]:
         result = []

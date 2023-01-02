@@ -22,3 +22,6 @@ class SPbTz(tzinfo):
 
     def tzname(self, dt):
         return "+03"
+
+
+spb_timezone = SPbTz()

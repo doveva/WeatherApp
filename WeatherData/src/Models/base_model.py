@@ -1,10 +1,9 @@
 from pydantic import BaseModel, validator
 from uuid import UUID, uuid4
-from abc import abstractmethod
 from typing import Optional
 from datetime import datetime
 
-from Utils.timezones import SPbTz
+from Utils.timezones import spb_timezone
 
 
 class BaseMeteoModel(BaseModel):
@@ -25,5 +24,3 @@ class BaseMeteoModel(BaseModel):
                 data[key] = value.replace(tzinfo=spb_timezone).replace(microsecond=0).isoformat()
         return data
 
-
-spb_timezone = SPbTz()
