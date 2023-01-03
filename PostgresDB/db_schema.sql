@@ -1,14 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS weather;
 
-CREATE TABLE IF NOT EXISTS weather.gismeteo (
-    id uuid PRIMARY KEY,
-    weather int NOT NULL,
-    humidity float NOT NULL,
-    wind_dir text NOT NULL,
-    wind_speed text NOT NULL ,
-    date timestamp with time zone NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS weather.places (
     id uuid default gen_random_uuid() PRIMARY KEY NOT NULL,
     name text NOT NULL,
@@ -29,3 +20,16 @@ CREATE TABLE IF NOT EXISTS weather.openweather (
     place uuid REFERENCES weather.places(id) ON DELETE CASCADE,
     created timestamp NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS weather.gismeteo (
+    id uuid PRIMARY KEY,
+    weather text NOT NULL,
+    cloud_cover int NOT NULL,
+    humidity float NOT NULL,
+    wind_dir text NOT NULL,
+    wind_speed text NOT NULL,
+    date timestamp with time zone NOT NULL,
+    place uuid REFERENCES weather.places(id) ON DELETE CASCADE,
+    created timestamp NOT NULL
+);
+

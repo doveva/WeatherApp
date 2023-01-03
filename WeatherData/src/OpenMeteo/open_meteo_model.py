@@ -11,13 +11,19 @@ class OpenMeteoModel(BaseMeteoModel):
     CloudCover: int
     WindSpeedLow: float
     WindDirectionLow: int = None
-    WindSpeedHigh: float = None
+    WindSpeedHigh: float
     WindDirectionHigh: int = None
     Datetime: datetime
 
     @validator('Weather', pre=True)
     def validate_weather(cls, v):
         return OpenWeatherMapper.weather_code(v)
+
+    @validator('WindSpeedHigh', pre=True)
+    def validate_speed(cls, v):
+        if v is None:
+            return 0
+        return v
 
 
 class OpenWeatherMapper:
