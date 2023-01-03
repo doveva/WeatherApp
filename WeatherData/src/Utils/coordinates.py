@@ -1,7 +1,5 @@
 from pydantic import BaseModel, validator, ValidationError
 
-from uuid import UUID
-
 
 class Place(BaseModel):
     id: str

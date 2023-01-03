@@ -6,8 +6,10 @@ from kafka import KafkaProducer
 from Utils.coordinates import Place
 from Utils.datetime_range import DateRange
 
-from OpenMeteo.open_meteo_model import spb_timezone
+from Utils.timezones import spb_timezone
 from OpenMeteo.open_meteo import OpenMeteoService
+
+from Gismeteo.gismeteo_data import GismeteoService
 
 from weather_service import WeatherBaseService
 
@@ -48,6 +50,6 @@ class WeatherETL:
 if __name__ == "__main__":
     WeatherETL(
         coords_range=PlacesDB().get_all_places(),
-        services_list=(OpenMeteoService(),),
+        services_list=(OpenMeteoService(), GismeteoService(),),
         kafka_host=['localhost:29093']
     ).run_etl()

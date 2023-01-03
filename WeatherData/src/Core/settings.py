@@ -8,5 +8,7 @@ class Config(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: str
 
+    GISMETEO_TOKEN: str
+
 
 config = Config()
