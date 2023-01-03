@@ -4,6 +4,7 @@ using Confluent.Kafka;
 using DotNetWeatherData.WeatherData;
 using DotNetWeatherData.WeatherData.OpenWeather;
 using DotNetWeatherData.Database;
+using DotNetWeatherData.WeatherData.Gismeteo;
 
 namespace DotNetWeatherData;
 
@@ -31,6 +32,15 @@ public class KafkaReader
             if (message.Message is { Key: "Open Meteo Service" })
             {
                 var deserialized = JsonSerializer.Deserialize<DataService<OpenWeatherData>>(message.Message.Value);
+                if (deserialized is not null)
+                {
+                    Database.LoadWeatherToDb(deserialized);
+                }
+            }
+
+            if (message.Message is { Key: "Gismeteo Service" })
+            {
+                var deserialized = JsonSerializer.Deserialize<DataService<GismeteoData>>(message.Message.Value);
                 if (deserialized is not null)
                 {
                     Database.LoadWeatherToDb(deserialized);
